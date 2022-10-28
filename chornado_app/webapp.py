@@ -1,7 +1,7 @@
-from flask import Flask, render_template
+from . import app
+from . import routes
+from flask import render_template
 from flask_sqlalchemy import SQLAlchemy
-
-app = Flask(__name__)
 
 # Under Contstruction
 @app.route('/')
@@ -9,4 +9,3 @@ app = Flask(__name__)
 def contstruction():
     return render_template('construction.html')
 
-import routes
