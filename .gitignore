@@ -1,8 +1,5 @@
-mockup.html
-README.md
 Docs/
 .gitignore
 chornado_app/__pycache__/
 venv/
 .vscode/
-recycle/
