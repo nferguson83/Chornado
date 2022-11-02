@@ -126,24 +126,31 @@ def children():
 @app.route('/parent_chores', methods=['GET', 'POST'])
 @login_required
 def parent_chores():
-    form = ChoreForm()
     parent = current_user.id
-    # child = form.child.data
+    chores = Chore.query.filter_by(parent_id=parent)
+    form = ChoreForm()
+    
     if request.method == 'POST' and form.validate_on_submit():
-        print('form validated')
         name = form.name.data
         value = form.value.data
+        chore_id = form.chore_id.data
         if form.create.data:
-            print("Adding new chore")
-            new_chore = Chore(name=name, value=value, parent=parent)
+            new_chore = Chore(name=name, value=value, parent_id=parent)
             db.session.add(new_chore)
+        elif form.assign.data:
+            child = form.child.data
+            new_assigned_chore = AssignedChore(state='Active', chore_id=chore_id, user_id=child)
+            db.session.add(new_assigned_chore)
         try:
             db.session.commit()
+            print('commit successful')
         except:
             db.session.rollback()
+            print('commit fail')
         return redirect(url_for('parent_chores', template_form=form))
     else:
-        return render_template('parent_chores.html', template_form=form)
+        
+        return render_template('parent_chores.html', template_form=form, chores=chores)
 
 
 # Route for testing database inserts and modifications

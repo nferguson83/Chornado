@@ -33,12 +33,24 @@
                         </thead>
                         <tbody>
                             <!-- Insert For loop with DB data -->
+                            {% for chore in chores %}                              
+                                <tr>
+                                    <form action="/parent_chores" method="post">
+                                        {{ template_form.csrf_token() }}
+                                        {{ template_form.chore_id(value=chore.id) }}
+                                        <td>{{ template_form.name(value=chore.name) }}</td>
+                                        <td>{{ template_form.value(value=chore.value) }}</td>
+                                        <td>{{ template_form.child }}{{ template_form.assign }}</td>
+                                        <td>{{ template_form.edit }}{{ template_form.delete }}</td>
+                                    </form>
+                                </tr>
+                            {% endfor %}
                             <tr>
                                 <form action="/parent_chores" method="post">
                                     {{ template_form.hidden_tag() }}
                                     <td>{{ template_form.name }}</td>
                                     <td>{{ template_form.value }}</td>
-                                    <td></td>
+                                    <td>{{ template_form.child(hidden="True") }}</td>
                                     <td>{{ template_form.create }}</td>
                                 </form> 
                             </tr>

@@ -1,6 +1,6 @@
 from flask_login import current_user
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, IntegerField, SelectField
+from wtforms import StringField, SubmitField, PasswordField, IntegerField, SelectField, HiddenField
 from wtforms.validators import DataRequired, EqualTo, Length, ValidationError, NumberRange
 from .sql_models import User
 
@@ -35,13 +35,15 @@ class ChoreForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired("Please enter a name for the chore")])
     value = IntegerField('Points', validators=[DataRequired("Please enter a point value"),
     NumberRange(min=1, max=9999)])
-    # child = SelectField('Child') # ?????    
+    child = SelectField('Child', coerce=int)
+    chore_id = HiddenField('Chore ID')
     create = SubmitField('Create')
     edit = SubmitField('Edit')
     delete = SubmitField('Delete')
     assign = SubmitField('Assign')
 
-    # def __init__(self):
-    #     super(ChoreForm, self).__init__()
-    #     self.child.choices = [(child.id, child.first_name) for child in
-    #     User.query.filter_by(parent=current_user.id).order_by(User.first_name)]
+    def __init__(self):
+        super(ChoreForm, self).__init__()
+        self.child.choices = [(child.id, child.first_name) for child in
+        User.query.filter_by(parent=current_user.id).order_by(User.first_name)]
+
