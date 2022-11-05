@@ -6,6 +6,7 @@ from .sql_models import User, Chore, AssignedChore, Reward, Notification
 from flask import render_template, request, url_for, redirect
 from flask_login import login_required, login_user, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from wtforms import ValidationError
 
 @login_manager.user_loader
 def load_user(id):
@@ -106,7 +107,7 @@ def children():
             db.session.commit()
         except:
             db.session.rollback()
-        return redirect(url_for('children', template_form=form))
+        return redirect(url_for('children'))
     # List of children and they're active chores
     else:
         children = User.query.filter_by(parent=parent).order_by(User.first_name)
@@ -129,18 +130,27 @@ def parent_chores():
     parent = current_user.id
     chores = Chore.query.filter_by(parent_id=parent)
     form = ChoreForm()
-    
     if request.method == 'POST' and form.validate_on_submit():
         name = form.name.data
         value = form.value.data
         chore_id = form.chore_id.data
+        chore = Chore.query.get(chore_id)
         if form.create.data:
             new_chore = Chore(name=name, value=value, parent_id=parent)
             db.session.add(new_chore)
         elif form.assign.data:
             child = form.child.data
-            new_assigned_chore = AssignedChore(state='Active', chore_id=chore_id, user_id=child)
-            db.session.add(new_assigned_chore)
+            if AssignedChore.query.filter_by(user_id=child, chore_id=chore_id).count() > 0:
+                print('duplicate entry')
+                return redirect(url_for('parent_chores'))
+            else:    
+                new_assigned_chore = AssignedChore(state='Active', chore_id=chore_id, user_id=child)
+                db.session.add(new_assigned_chore)
+        elif form.edit.data:
+            chore.name = name
+            chore.value = value
+        elif form.delete.data:
+            db.session.delete(chore)
         try:
             db.session.commit()
             print('commit successful')
@@ -149,7 +159,6 @@ def parent_chores():
             print('commit fail')
         return redirect(url_for('parent_chores', template_form=form))
     else:
-        
         return render_template('parent_chores.html', template_form=form, chores=chores)
 
 

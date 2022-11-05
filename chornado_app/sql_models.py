@@ -12,7 +12,7 @@ class User(db.Model, UserMixin):
     points = db.Column(db.Integer) # For child users only
     parent = db.Column(db.Integer) # For child users only. Relates to Users.id of parent account
     chores = db.relationship('Chore', backref='user', lazy='dynamic') # backref to chores table
-    assigned_chores = db.relationship('AssignedChore', backref='user', lazy='dynamic') # backref to assigned chores table
+    assigned_chores = db.relationship('AssignedChore', backref='user', lazy='dynamic', cascade='all, delete, delete-orphan') # backref to assigned chores table
     rewards = db.relationship('Reward', backref='user', lazy='dynamic') # backref to rewards table
 
     def __repr__(self):
@@ -24,7 +24,7 @@ class Chore(db.Model):
     name = db.Column(db.String(256), nullable=False, index=True)
     value = db.Column(db.Integer, nullable=False) # Point value of task
     parent_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) 
-    assigned_chores = db.relationship('AssignedChore', backref='chore', lazy='dynamic')
+    assigned_chores = db.relationship('AssignedChore', backref='chore', lazy='dynamic', cascade='all, delete, delete-orphan')
     
     def __repr__(self):
         return "{}".format(self.name)

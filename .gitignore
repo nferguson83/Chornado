@@ -1,5 +1,4 @@
 Docs/
-.gitignore
 chornado_app/__pycache__/
 venv/
 .vscode/
