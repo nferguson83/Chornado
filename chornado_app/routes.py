@@ -1,12 +1,11 @@
-from . import db
-from . import app
-from . import login_manager
-from .forms import LoginForm, RegisterForm, ChoreForm
-from .sql_models import User, Chore, AssignedChore, Reward, Notification
-from flask import render_template, request, url_for, redirect
-from flask_login import login_required, login_user, logout_user, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
-from wtforms import ValidationError
+from flask import redirect, render_template, request, url_for
+from flask_login import current_user, login_required, login_user, logout_user
+from werkzeug.security import check_password_hash, generate_password_hash
+
+from . import app, db, login_manager
+from .forms import AssignedChoreForm, ChoreForm, LoginForm, RegisterForm, DeleteUserForm, ResetPasswordForm
+from .sql_models import AssignedChore, Chore, Notification, Reward, User
+
 
 @login_manager.user_loader
 def load_user(id):
@@ -91,37 +90,42 @@ def home():
 @app.route('/children', methods=['GET', 'POST'])
 @login_required
 def children():
-    form = RegisterForm()
+    register_form = RegisterForm()
+    chore_form = AssignedChoreForm()
     parent = current_user.id
-    # Register new child account
-    if request.method == 'POST' and form.validate_on_submit():
-        username = form.username.data
-        password = form.password.data
-        first_name = form.first_name.data
-        last_name = form.last_name.data
-        hash = generate_password_hash(password, method='pbkdf2:sha256', salt_length=8)
-        new_user = User(username=username, first_name=first_name, last_name=last_name,
-        password_hash=hash, type="child", points=0, parent=parent)
-        db.session.add(new_user)
+    children = User.query.filter_by(parent=parent).order_by(User.first_name)
+    child_data = []
+    for child in children:
+        chores = []
+        assigned_chores = AssignedChore.query.filter_by(user_id=child.id).order_by(AssignedChore.id)
+        for chore in assigned_chores:
+            chore_info = Chore.query.get(chore.chore_id)
+            chore_dict = {'name': chore_info.name, 'points': chore_info.value, 'status': chore.state}
+            chores.append(chore_dict)
+        child_dict = {'username': child.username, 'first_name': child.first_name, 'points': child.points, 'chores': chores}
+        child_data.append(child_dict)
+    if request.method == 'POST' and (register_form.validate_on_submit() or chore_form.validate_on_submit()):
+        # Register new child account
+        if register_form.submit.data:
+            username = register_form.username.data
+            password = register_form.password.data
+            first_name = register_form.first_name.data
+            last_name = register_form.last_name.data
+            hash = generate_password_hash(password, method='pbkdf2:sha256', salt_length=8)
+            new_user = User(username=username, first_name=first_name, last_name=last_name,
+            password_hash=hash, type="child", points=0, parent=parent)
+            db.session.add(new_user)
+        elif chore_form.complete.data:
+            pass
         try:
             db.session.commit()
         except:
             db.session.rollback()
         return redirect(url_for('children'))
-    # List of children and they're active chores
+    # List of children and their active chores
     else:
-        children = User.query.filter_by(parent=parent).order_by(User.first_name)
-        child_data = []
-        for child in children:
-            chores = []
-            assigned_chores = AssignedChore.query.filter_by(user_id=child.id).order_by(AssignedChore.id)
-            for chore in assigned_chores:
-                chore_info = Chore.query.get(chore.chore_id)
-                chore_dict = {'name': chore_info.name, 'points': chore_info.value, 'status': chore.state}
-                chores.append(chore_dict)
-            child_dict = {'username': child.username, 'first_name': child.first_name, 'points': child.points, 'chores': chores}
-            child_data.append(child_dict)
-        return render_template('children.html', template_form=form, child_data=child_data)
+        
+        return render_template('children.html', template_form=register_form, chore_form=chore_form, child_data=child_data)
 
 # Parent's chore page for creating, viewing, editing, and assigning chores
 @app.route('/parent_chores', methods=['GET', 'POST'])
@@ -142,7 +146,8 @@ def parent_chores():
             child = form.child.data
             if AssignedChore.query.filter_by(user_id=child, chore_id=chore_id).count() > 0:
                 print('duplicate entry')
-                return redirect(url_for('parent_chores'))
+                error = "This chore has already been assigned to this child."
+                return render_template('parent_chores.html', template_form=form, chores=chores, error=error)
             else:    
                 new_assigned_chore = AssignedChore(state='Active', chore_id=chore_id, user_id=child)
                 db.session.add(new_assigned_chore)
@@ -160,6 +165,34 @@ def parent_chores():
         return redirect(url_for('parent_chores', template_form=form))
     else:
         return render_template('parent_chores.html', template_form=form, chores=chores)
+
+# Route for deleting users
+@app.route('/delete/<int:user_id>', methods=['GET', 'POST'])
+def delete_user(user_id):
+    form = DeleteUserForm()
+    user = User.query.get(user_id)
+    if request.method == 'POST' and form.validate_on_submit():
+        if user.type == 'parent':
+            children = User.query.filter_by(parent=user.id).all()
+            for child in children:
+                db.session.delete(child)
+            db.session.delete(user)
+            logout_user()
+        else:
+            db.session.delete(user)
+        try:
+            db.session.commit()
+            print('commit successful')
+        except:
+            db.session.rollback()
+            print('commit fail')
+        return redirect(url_for('home'))
+    else:
+        if user.parent == current_user.id or user_id == current_user.id:
+            return render_template('delete_user.html', template_form=form, user=user)
+        else:
+            return redirect(url_for('home'))
+        
 
 
 # Route for testing database inserts and modifications

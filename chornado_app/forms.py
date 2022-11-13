@@ -47,3 +47,22 @@ class ChoreForm(FlaskForm):
         self.child.choices = [(child.id, child.first_name) for child in
         User.query.filter_by(parent=current_user.id).order_by(User.first_name)]
 
+class AssignedChoreForm(FlaskForm):
+    chore_id = HiddenField('Chore ID')
+    delete = SubmitField('Delete')
+    complete = SubmitField('Complete')
+    reject = SubmitField('Reject')
+
+class DeleteUserForm(FlaskForm):
+    user_id = HiddenField('User ID')
+    delete = SubmitField('Delete')
+    cancel = SubmitField('Cancel')
+
+class ResetPasswordForm(FlaskForm):
+    old_password = PasswordField('Old Password', validators=[DataRequired("Please enter the old password")])
+    new_password = PasswordField('New Password', validators=[DataRequired("Please enter a password"),
+    Length(min=8, max=64, message="Password length must be at least 8 characters"),
+    EqualTo("confirm_password", "Passwords must match")])
+    confirm_password = PasswordField('Confirm Password',
+    validators=[DataRequired("Please confirm the password")])
+    submit = SubmitField('Reset Password')
