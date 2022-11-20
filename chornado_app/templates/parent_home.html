@@ -1,37 +1,26 @@
 {% extends "_parent_base.html" %}
 
 {% block content %}
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-xl-8 col-11 m-4 mx-xl-auto py-2 rounded" id="bodyMain">
-                <div class="row">
-                    <p>Welcome to Chornado</p>
-                </div>
-                <div class="row">
-                    <div class="row">
-                        <table class = "table">
-                            <thead>
-                                <tr>
-                                    <th scope="col" class="text-start">Child</th>
-                                    <th scope="col" class="text-start">Name</th>
-                                    <th scope="col" class="text-end">Points</th>
-                                    <th scope="col" class="text-end">Active Chores</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for child in child_data %}
-                                    <tr>
-                                        <th scope="row" class="text-start"><a href="/children">{{ child["username"] }}</a></th>
-                                        <td class="text-start">{{ child["first_name"] }}</td>
-                                        <td class="text-end">{{ child["points"] }}</td>
-                                        <td class="text-end">{{ child["chores"] }}</td>                                                                     
-                                    </tr>
-                                {% endfor %}
-                            </tbody>                        
-                        </table>
-                    </div>
-                </div>    
-            </div>
-        </div>        
+    <div class="row">
+        <table class = "table">
+            <thead>
+                <tr>
+                    <th scope="col" class="text-start">Child</th>
+                    <th scope="col" class="text-start">Name</th>
+                    <th scope="col" class="text-end">Points</th>
+                    <th scope="col" class="text-end">Active Chores</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for child in child_data %}
+                    <tr>
+                        <th scope="row" class="text-start"><a href="/children">{{ child["username"] }}</a></th>
+                        <td class="text-start">{{ child["first_name"] }}</td>
+                        <td class="text-end">{{ child["points"] }}</td>
+                        <td class="text-end">{{ child["chores"] }}</td>                                                                     
+                    </tr>
+                {% endfor %}
+            </tbody>                        
+        </table>
     </div>
 {% endblock %}

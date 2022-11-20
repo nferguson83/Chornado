@@ -22,30 +22,27 @@
             <thead>
                 <tr>
                     <th scope="col">Name</th>
-                    <th scope="col">Points</th>
-                    <th scope="col">Assign to:</th>
+                    <th scope="col">Cost</th>
                     <th scope="col">Actions</th>
                 </tr>
             </thead>
             <tbody>
-                {% for chore in chores %}                              
+                {% for reward in rewards %}                              
                     <tr>
-                        <form action="/parent_chores" method="post">
+                        <form action="/parent_rewards" method="post">
                             {{ template_form.csrf_token() }}
-                            {{ template_form.chore_id(value=chore.id) }}
-                            <td>{{ template_form.name(value=chore.name) }}</td>
-                            <td>{{ template_form.value(value=chore.value) }}</td>
-                            <td>{{ template_form.child }}{{ template_form.assign }}</td>
+                            {{ template_form.reward_id(value=reward.id) }}
+                            <td>{{ template_form.name(value=reward.name) }}</td>
+                            <td>{{ template_form.cost(value=reward.cost) }}</td>
                             <td>{{ template_form.edit }}{{ template_form.delete }}</td>
                         </form>
                     </tr>
                 {% endfor %}
                 <tr>
-                    <form action="/parent_chores" method="post">
+                    <form action="/parent_rewards" method="post">
                         {{ template_form.hidden_tag() }}
                         <td>{{ template_form.name }}</td>
-                        <td>{{ template_form.value }}</td>
-                        <td>{{ template_form.child(hidden="True") }}</td>
+                        <td>{{ template_form.cost }}</td>
                         <td>{{ template_form.create }}</td>
                     </form> 
                 </tr>
