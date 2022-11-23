@@ -10,24 +10,18 @@ class User(db.Model, UserMixin):
     first_name = db.Column(db.String(64), nullable=False)
     last_name = db.Column(db.String(64), nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
-    
     # Establishes whether account is for a parent or child user
     type =  db.Column(db.String(20), nullable=False) 
-   
     # For child users only
     points = db.Column(db.Integer) 
-    
     # For child users only. Relates to Users.id of parent account    
     parent = db.Column(db.Integer)
-
     # backref to chores table
     chores = db.relationship('Chore', backref='user', lazy='dynamic',
     cascade='all, delete, delete-orphan')
-
     # backref to assigned chores table
     assigned_chores = db.relationship('AssignedChore', backref='user',
     lazy='dynamic',cascade='all, delete, delete-orphan')
-
     # backref to rewards table
     rewards = db.relationship('Reward', backref='user', lazy='dynamic',
     cascade='all, delete, delete-orphan') 

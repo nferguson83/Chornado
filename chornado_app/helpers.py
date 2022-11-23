@@ -27,7 +27,7 @@ parent=None):
     """Register new parent and child users"""
     hash = generate_password_hash(password, method='pbkdf2:sha256', salt_length=8)
     new_user = User(username=username, first_name=first_name, last_name=last_name,
-        password_hash=hash, type=type, points=points, parent=parent)
+    password_hash=hash, type=type, points=points, parent=parent)
     db.session.add(new_user)
 
 def create_chore(name, value, parent_id):
