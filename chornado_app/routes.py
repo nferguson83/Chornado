@@ -234,12 +234,17 @@ def delete_user(user_id):
     
     if request.method == 'POST' and form.validate_on_submit():
         if user.type == 'parent':
+            # Identify child accounts linked to parent account for deletion
             children = User.query.filter_by(parent=user.id).all()
             for child in children:
                 db.session.delete(child)
             logout_user()
             db.session.delete(user)
         else:
+            # Identify notifications linked to child account for deletion
+            notifications = Notification.query.filter_by(child_id=user.id).all()
+            for notification in notifications:
+                db.session.delete(notification)
             db.session.delete(user)
         db_commit()
         return redirect(url_for('home'))
