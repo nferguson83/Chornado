@@ -5,7 +5,7 @@ from . import db
 class User(db.Model, UserMixin):
     """SQLAlchemy User model"""
     
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, db.Identity(start=1), primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False, index=True)
     first_name = db.Column(db.String(64), nullable=False)
     last_name = db.Column(db.String(64), nullable=False)
@@ -13,32 +13,37 @@ class User(db.Model, UserMixin):
     # Establishes whether account is for a parent or child user
     type =  db.Column(db.String(20), nullable=False) 
     # For child users only
-    points = db.Column(db.Integer) 
+    points = db.Column(db.Integer, nullable=True) 
     # For child users only. Relates to Users.id of parent account    
-    parent = db.Column(db.Integer)
+    parent = db.Column(db.Integer, nullable=True)
     # backref to chores table
     chores = db.relationship('Chore', backref='user', lazy='dynamic',
-    cascade='all, delete, delete-orphan')
+        cascade='all, delete, delete-orphan')
+    
     # backref to assigned chores table
     assigned_chores = db.relationship('AssignedChore', backref='user',
-    lazy='dynamic',cascade='all, delete, delete-orphan')
+        lazy='dynamic',cascade='all, delete, delete-orphan')
+    
     # backref to rewards table
     rewards = db.relationship('Reward', backref='user', lazy='dynamic',
-    cascade='all, delete, delete-orphan') 
+        cascade='all, delete, delete-orphan')
+    
+    # backref to notifications table
+    notifications = db.relationship('Notification', backref='user',
+        lazy='dynamic', cascade='all, delete, delete-orphan')
 
     def __repr__(self):
         return "{}".format(self.username)
 
 class Chore(db.Model):
     """SQLAlchemy model for created chores"""
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(256), nullable=False, index=True)
-    
+    id = db.Column(db.Integer, db.Identity(start=1), primary_key=True)
+    name = db.Column(db.String(256), nullable=False, index=True)    
     # Point value of task  
     value = db.Column(db.Integer, nullable=False) 
-    parent_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) 
+    parent_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     assigned_chores = db.relationship('AssignedChore', backref='chore',
-    lazy='dynamic', cascade='all, delete, delete-orphan')
+        lazy='dynamic', cascade='all, delete, delete-orphan')
     
     def __repr__(self):
         return "{}".format(self.name)
@@ -46,18 +51,23 @@ class Chore(db.Model):
 class AssignedChore(db.Model):
     """SQLAlchemy model for assigned chores"""
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, db.Identity(start=1), primary_key=True)
     state = db.Column(db.String(24), nullable=False)
     chore_id = db.Column(db.Integer, db.ForeignKey('chore.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    notifications = db.relationship('Notification', backref='assigned_chore',
+        lazy='dynamic', cascade='all, delete, delete-orphan')
 
 class Reward(db.Model):
     """SQLAlchemy model for created rewards"""
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, db.Identity(start=1), primary_key=True)
     name = db.Column(db.String(256), nullable=False, index=True)
     cost = db.Column(db.Integer, nullable=False)
     parent_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    notifications = db.relationship('Notification', backref='reward',
+        lazy='dynamic', cascade='all, delete, delete-orphan')
+
 
     def __repr__(self):
         return "{}".format(self.name)
@@ -65,14 +75,13 @@ class Reward(db.Model):
 class Notification(db.Model):
     """SQLAlchemy model for active notifications"""
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, db.Identity(start=1), primary_key=True)
     type = db.Column(db.String(12), nullable=False)
     message = db.Column(db.String(256), nullable=False)
-    # Change to user ID
-    parent_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     child_id = db.Column(db.Integer, nullable=False)
-    # reward_id
-    # chore_id
+    reward_id = db.Column(db.Integer, db.ForeignKey('reward.id'), nullable=False)
+    chore_id = db.Column(db.Integer, db.ForeignKey('assigned_chore.id'), nullable=False)
 
     def __repr__(self):
         return "{}".format(self.message)

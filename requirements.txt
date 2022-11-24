@@ -5,3 +5,4 @@ flask_login
 wtforms
 python-dotenv
 requests
+oracledb
