@@ -2,7 +2,6 @@ from flask import request, url_for
 from werkzeug.security import generate_password_hash
 from sqlalchemy import exc
 
-from . import db
 from .forms import *
 from .sql_models import *
 
