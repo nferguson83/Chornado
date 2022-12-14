@@ -2,3 +2,4 @@ Docs/
 chornado_app/__pycache__/
 venv/
 .vscode/
+instance/

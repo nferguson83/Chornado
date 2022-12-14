@@ -24,8 +24,8 @@
                     <th scope="row" class="text-start"><h3>{{ child.first_name }}</h3></th>
                     <td class="text-start">{{ child.points }} points</td>
                     <td class="text-end">
-                        <a href="{{ url_for('delete_user', user_id=child.id) }}">Delete</a>
-                        <a href="{{ url_for('pass_reset', user_id=child.id) }}">Reset Password</a>
+                        <a href="{{ url_for('routes.delete_user', user_id=child.id) }}">Delete</a>
+                        <a href="{{ url_for('routes.pass_reset', user_id=child.id) }}">Reset Password</a>
                     </td>
                 </tr>
             </table>
