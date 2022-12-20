@@ -132,6 +132,7 @@ class RewardForm(FlaskForm):
         NumberRange(min=1, max=9999)])
     
     reward_id = HiddenField('Reward ID')
+    notification_id = HiddenField('Notification ID')
     create = SubmitField('Create')
     edit = SubmitField('Edit')
     delete = SubmitField('Delete')

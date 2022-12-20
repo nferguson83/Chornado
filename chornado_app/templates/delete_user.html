@@ -1,19 +1,13 @@
-{% extends "_parent_base.html" %}
+{% extends "parents/_parent_base.html" %}
 
 {% block content %}
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-xl-8 col-11 m-4 mx-xl-auto py-2 rounded" id="bodyMain">                
-                <div class="row">
-                    <h3>Are you sure you want to delete {{ user.first_name }}?</h3>
-                    <form action="/delete/{{ user.id }}" method="post">
-                        {{ template_form.hidden_tag() }}
-                        {{ template_form.user_id(value=user.id) }}
-                        {{ template_form.delete(class="btn btn-secondary") }}
-                        <a href="{{ url_for('routes.index') }}"><button type="button" class="btn btn-secondary">Cancel</button></a>
-                    </form>
-                </div>
-            </div>
-        </div>
+    <div class="row">
+        <h3>Are you sure you want to delete {{ user.first_name }}?</h3>
+        <form action="/delete/{{ user.id }}" method="post">
+            {{ template_form.hidden_tag() }}
+            {{ template_form.user_id(value=user.id) }}
+            {{ template_form.delete(class="btn btn-secondary") }}
+            <a href="{{ url_for('routes.index') }}"><button type="button" class="btn btn-secondary">Cancel</button></a>
+        </form>
     </div>
-{% endblock %}
+ {% endblock %}
