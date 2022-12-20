@@ -1,4 +1,4 @@
-from flask import request, url_for
+from flask import request, url_for, flash
 from werkzeug.security import generate_password_hash
 from sqlalchemy import exc
 
@@ -57,6 +57,15 @@ def approve_completed(chore, child, new_points):
     child.points += new_points
     db.session.delete(chore)
     return child
+
+def reject_completed(chore):
+    """Reject completed chore, and remove attached notifications
+    Args: (chore)"""
+    chore.state = 'Rejected'
+    notifications = chore.notifications
+    for notification in notifications:
+        db.session.delete(notification)
+    return chore
     
 def create_reward(name, cost, parent_id):
     """Add new reward to database
@@ -70,3 +79,13 @@ def edit_reward(reward, name, cost):
     reward.name = name
     reward.cost = cost
     return reward
+
+def flash_errors(form):
+    """Flash form errors to template.
+    Function inspired by Sean W. on StackOverflow.
+    Args: (form)"""
+    print(form.errors)
+    for field, errors in form.errors.items():
+        print(errors)
+        for error in errors:
+            flash(error, 'error')

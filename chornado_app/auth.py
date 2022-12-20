@@ -1,4 +1,4 @@
-from flask import redirect, render_template, request, url_for, Blueprint
+from flask import redirect, render_template, request, url_for, Blueprint, flash
 from flask_login import login_required, login_user, logout_user, LoginManager
 from werkzeug.security import check_password_hash
 
@@ -26,9 +26,10 @@ def login():
             login_user(user)
             return redirect(url_for('routes.index'))
         else:
-            error = 'Please enter correct username and password' # Change to flash message (categories)
-            return render_template('login.html', template_form=form, error=error)
+            flash('Please enter correct username and password', 'error')
+            return redirect(url_for('auth.login'))
     else:
+        flash_errors(form)
         return render_template('login.html', template_form=form)
 
 @auth_bp.route('/logout')
@@ -48,11 +49,12 @@ def register():
         first_name = form.first_name.data
         last_name = form.last_name.data
         register_user(username, password, first_name, last_name, "parent")
-        success = 'Account created. Please login.' # Change to flash message
+        # success = 'Account created. Please login.' # Change to flash message
         db_commit()
-        return render_template('login.html', template_form=form,
-        success=success) # Change to redirect?
+        flash('Account created. Please login.', 'success')
+        return redirect(url_for('auth.login'))
     else:
+        flash_errors(form)
         return render_template('register.html', template_form=form)
 
 @login_manager.unauthorized_handler

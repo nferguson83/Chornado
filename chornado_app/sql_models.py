@@ -44,6 +44,7 @@ class Chore(db.Model):
     # Point value of task  
     value = db.Column(db.Integer, nullable=False) 
     parent_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    # backref to Assigned_Chore table
     assigned_chores = db.relationship('AssignedChore', backref='chore',
         lazy='dynamic', cascade='all, delete, delete-orphan')
     
@@ -54,9 +55,13 @@ class AssignedChore(db.Model):
     """SQLAlchemy model for assigned chores"""
 
     id = db.Column(db.Integer, db.Identity(start=1), primary_key=True)
+    # Possible states: Active, Complete, Rejected
     state = db.Column(db.String(24), nullable=False)
+    # Chore that has been assigned
     chore_id = db.Column(db.Integer, db.ForeignKey('chore.id'), nullable=False)
+    # Child user that chore is assigned to
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    # backref to Notifications table
     notifications = db.relationship('Notification', backref='assigned_chore',
         lazy='dynamic', cascade='all, delete, delete-orphan')
 
@@ -67,6 +72,7 @@ class Reward(db.Model):
     name = db.Column(db.String(256), nullable=False, index=True)
     cost = db.Column(db.Integer, nullable=False)
     parent_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    # backref to Notifications table
     notifications = db.relationship('Notification', backref='reward',
         lazy='dynamic', cascade='all, delete, delete-orphan')
 
@@ -78,12 +84,18 @@ class Notification(db.Model):
     """SQLAlchemy model for active notifications"""
 
     id = db.Column(db.Integer, db.Identity(start=1), primary_key=True)
+    # Possible types: chore, reward    
     type = db.Column(db.String(12), nullable=False)
+    # Message string for notification. Will include vars for Chore or Reward
     message = db.Column(db.String(256), nullable=False)
+    # ID of parent user owning notification
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    # ID of child user that notification references
     child_id = db.Column(db.Integer, nullable=False)
-    reward_id = db.Column(db.Integer, db.ForeignKey('reward.id'), nullable=False)
-    chore_id = db.Column(db.Integer, db.ForeignKey('assigned_chore.id'), nullable=False)
+    # References reward that notification relates to
+    reward_id = db.Column(db.Integer, db.ForeignKey('reward.id'), nullable=True)
+    # References chore that notification relates to
+    chore_id = db.Column(db.Integer, db.ForeignKey('assigned_chore.id'), nullable=True)
 
     def __repr__(self):
         return "{}".format(self.message)
