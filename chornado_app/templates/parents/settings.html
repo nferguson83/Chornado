@@ -1,0 +1,20 @@
+{% extends "parents/_parent_base.html" %}
+
+{% block content %}
+    <div class="row">
+        <h3>Reset Password</h3>
+        <form action="/parent/settings", method="post">
+            {{ template_form.csrf_token }}
+            {{ template_form.old_password.label }}
+            {{ template_form.old_password }}
+            {{ template_form.new_password.label }}
+            {{ template_form.new_password }}
+            {{ template_form.confirm_password.label }}
+            {{ template_form.confirm_password }}
+            {{ template_form.submit }}
+        </form>
+    </div>
+    <div class="row">
+        <a href="{{ url_for('routes.delete_user', user_id=parent.id) }}">Delete Account</a>
+    </div>
+{% endblock %}
