@@ -1,9 +1,10 @@
+from os import environ, makedirs
 from flask import Flask
 from dotenv import load_dotenv
-from os import environ, makedirs
-
 
 def create_app():
+    '''Creates flask application session'''
+  
     app = Flask(__name__, instance_relative_config=True)
     # Load environment variables into OS, and remove .env for production
     load_dotenv('../.env')
@@ -12,7 +13,7 @@ def create_app():
     dbpassword = environ.get('DBPASSWORD')
     dbdir = environ.get('DBDIR')
     dbwpassword = environ.get('DBWPASSWORD')
-    
+
     app.config.from_mapping(
         SECRET_KEY='dev', # Change to more secure key
         SQLALCHEMY_DATABASE_URI=f'oracle+oracledb://{dblogin}:{dbpassword}@chornadodb_high/?config_dir={dbdir}&wallet_location={dbdir}&wallet_password={dbwpassword}&encoding=UTF-8&nencoding=UTF-8',
@@ -32,11 +33,14 @@ def create_app():
 
     from .auth import auth_bp
     app.register_blueprint(auth_bp)
-    
+
     from .routes import routes_bp
     app.register_blueprint(routes_bp)
 
-    from .parents import parents_bp
-    app.register_blueprint(parents_bp)
+    from .parents import parent_bp
+    app.register_blueprint(parent_bp)
+
+    from .children import child_bp
+    app.register_blueprint(child_bp)
 
     return app

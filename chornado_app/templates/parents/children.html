@@ -5,44 +5,54 @@
         {% for child in child_data %}
             <table class="table">
                 <tr>
-                    <th scope="row" class="text-start"><h3>{{ child.first_name }}</h3></th>
-                    <td class="text-start">{{ child.points }} points</td>
-                    <td class="text-end">
-                        <a href="{{ url_for('routes.delete_user', user_id=child.id) }}">Delete</a>
-                        <a href="{{ url_for('routes.pass_reset', user_id=child.id) }}">Reset Password</a>
-                    </td>
+                    <form action="/parent/children" method="post">
+                        {{ points_form.csrf_token }}
+                        {{ points_form.child_id(value=child.id) }}
+                        <th scope="row" class="text-start"><h3>{{ child.first_name }}</h3></th>
+                        <td class="text-start">{{ child.points }} points</td>
+                        <td class="text-end">
+                            +/-{{ points_form.points(value="0") }} points
+                            {{ points_form.adjust }}
+                        </td>
+                        <td class="text-end">
+                            <a href="{{ url_for('routes.delete_user', user_id=child.id) }}">Delete</a>
+                            <a href="{{ url_for('routes.pass_reset', user_id=child.id) }}">Reset Password</a>
+                        </td>
+                    </form>
                 </tr>
             </table>
-            <table class ="table">
-                <thead>
-                    <tr>
-                        <th scope="col" class="text-start">Chore</th>
-                        <th scope="col" class="text-end">Points</th>
-                        <th scope="col" class="text-end">Status</th>
-                        <th scope="col" class="text-end">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for chore in child.chores %}
+            {% if child.count > 0 %}            
+                <table class ="table">
+                    <thead>
                         <tr>
-                            <form action="/parent/children" method="post">
-                                {{ chore_form.csrf_token() }}
-                                {{ chore_form.chore_id(value=chore.id) }}
-                                    <th scope="row" class="text-start">{{ chore["name"] }}</th>
-                                    <td class="text-end">{{ chore["points"] }}</td>
-                                    <td class="text-end">{{ chore["state"] }}</td>
-                                    <td class="text-end">
-                                        {{ chore_form.delete() }}
-                                        {{ chore_form.approve() }}
-                                        {% if chore["state"] == "Complete" %}
-                                            {{ chore_form.reject() }}
-                                        {% endif %}
-                                    </td>
-                            </form>
+                            <th scope="col" class="text-start">Chore</th>
+                            <th scope="col" class="text-end">Points</th>
+                            <th scope="col" class="text-end">Status</th>
+                            <th scope="col" class="text-end">Actions</th>
                         </tr>
-                    {% endfor %}
-                </tbody>                        
-            </table>
+                    </thead>
+                    <tbody>
+                        {% for chore in child.chores %}
+                            <tr>
+                                <form action="/parent/children" method="post">
+                                    {{ chore_form.csrf_token() }}
+                                    {{ chore_form.chore_id(value=chore.id) }}
+                                        <th scope="row" class="text-start">{{ chore["name"] }}</th>
+                                        <td class="text-end">{{ chore["points"] }}</td>
+                                        <td class="text-end">{{ chore["state"] }}</td>
+                                        <td class="text-end">
+                                            {{ chore_form.delete() }}
+                                            {{ chore_form.approve() }}
+                                            {% if chore["state"] == "Complete" %}
+                                                {{ chore_form.reject() }}
+                                            {% endif %}
+                                        </td>
+                                </form>
+                            </tr>
+                        {% endfor %}
+                    </tbody>                        
+                </table>
+            {% endif %}
         {% endfor %}
     </div>
     <div class="row">

@@ -1,11 +1,46 @@
-{% extends "_child_base.html" %}
+{% extends "children/_child_base.html" %}
 
 {% block content %}
-    <div class="container-fluid">
+    {% if notifications.count() > 0 %}
         <div class="row">
-            <div class="col-xl-8 col-11 m-4 mx-xl-auto py-2 rounded" id="bodyMain">
-                <p>Welcome to Chornado</p>
+            <div class="alert alert-info d-flex align-items-center" role="alert">
+                <ul class="list-group-flush">                
+                    {% for notification in notifications %}
+                        <form action="/child/home" method="post">
+                            {{ notification_form.csrf_token() }}
+                            {{ notification_form.notification_id(value=notification.id)}}
+                            <li class="list-group-item list-group-item-info">{{ notification.message }} {{ notification_form.acknowledge }}</li>
+                        </form>
+                        {% endfor %}
+                </ul>
             </div>
         </div>
+    {% endif %}
+    <div class="row">
+        <h3>{{ child.first_name }}  {{ child.points }} points</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Chore</th>
+                    <th scope="col">Points</th>
+                    <th scope="col">Status</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for chore in chores %}
+                    <tr>
+                        <form action="/child/home" method="post">
+                            {{ chore_form.csrf_token() }}
+                            {{ chore_form.chore_id(value=chore.id) }}
+                            <td>{{ chore.name }}</td>
+                            <td>{{ chore.points }}</td>
+                            <td>{{ chore.state }}</td>
+                            <td>{{ chore_form.complete }}</td>
+                        </form>
+                    </tr>
+                {% endfor %}
+            </tbody>           
+        </table>
     </div>
 {% endblock %}

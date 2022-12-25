@@ -1,0 +1,29 @@
+{% extends "children/_child_base.html" %}
+
+{% block content %}
+    <div class="row">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Reward</th>
+                    <th scope="col">Cost</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reward in rewards %}
+                    <tr>
+                        <form action="/child/rewards" method="post">
+                            {{ template_form.csrf_token() }}
+                            {{ template_form.reward_id(value=reward.id) }}
+                            {{ template_form.cost(hidden="True", value=reward.cost) }}
+                            {{ template_form.name(hidden="True", value=reward.name) }}
+                            <td>{{ reward.name }}</td>
+                            <td>{{ reward.cost }}</td>
+                            <td>{{ template_form.purchase }}</td>
+                        </form>
+                    </tr>
+                {% endfor %}
+        </table>
+    </div>
+{% endblock %}
