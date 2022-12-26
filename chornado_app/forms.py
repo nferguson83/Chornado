@@ -1,49 +1,82 @@
 from flask_login import current_user
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, IntegerField, SelectField, HiddenField
-from wtforms.validators import DataRequired, EqualTo, Length, ValidationError, NumberRange
-from .sql_models import User, AssignedChore
+from wtforms import (StringField, SubmitField, PasswordField, IntegerField,
+    SelectField, HiddenField)
+from wtforms.validators import (InputRequired, EqualTo, Length, ValidationError,
+    NumberRange, Email)
+from .sql_models import (Parent, Child, AssignedChore)
 
 class LoginForm(FlaskForm):
     """Form for logging in users"""
 
     username = StringField('Username',
-        validators=[DataRequired("Please enter your username")])
+        validators=[InputRequired("Please enter your username"), Email()])
 
     password = PasswordField('Password',
-        validators=[DataRequired("Please enter your password")])
+        validators=[InputRequired("Please enter your password")])
 
     submit = SubmitField('Login')
 
-class RegisterForm(FlaskForm):
-    """Form used for registering primary parent users and child
-    users from parent accounts"""
+class ParentRegForm(FlaskForm):
+    """Form used for registering primary parent users"""
 
-    username = StringField('Username', validators=[DataRequired("Please enter a username"),
+    username = StringField('Email Address',
+        validators=[InputRequired("Please enter a username"),
+        Length(min=8, max=64, message="Username must be at least 8 characters long"),
+        Email("Username must be an email address")])
+
+    def validate_username(self, field):
+        '''Custom validator to check that username is unique'''
+
+        parent_user = Parent.query.filter_by(username=field.data).first()
+        child_user = Child.query.filter_by(username=field.data).first()
+        if parent_user is not None or child_user is not None:
+            raise ValidationError("Username already exists")
+        
+
+    first_name = StringField('First name',
+        validators=[InputRequired("Please enter your first name"),
+        Length(min=2, max=64, message="First name must be at least 2 letters long")])
+
+    last_name = StringField('Last name',
+        validators=[InputRequired("Please enter your last name"),
+        Length(min=2, max=64, message="Last name must be at least 2 letters long")])
+
+    password = PasswordField('Password',
+        validators=[InputRequired("Please enter a password"),
+        Length(min=8, max=64, message="Password length must be at least 8 characters long"),
+        EqualTo("confirm_password", "Passwords must match")])
+
+    confirm_password = PasswordField('Confirm Password',
+        validators=[InputRequired("Please confirm the password")])
+
+    submit = SubmitField('Register')
+
+class ChildRegForm(FlaskForm):
+    """Form used for registering child users"""
+
+    username = StringField('Username', validators=[InputRequired("Please enter a username"),
         Length(min=6, max=64, message="Username must be at least 6 characters long")])
 
     def validate_username(self, field):
         '''Custom validator to check that username is unique'''
 
-        user = User.query.filter_by(username=field.data).first()
-        if user is not None:
+        parent_user = Parent.query.filter_by(username=field.data).first()
+        child_user = Child.query.filter_by(username=field.data).first()
+        if parent_user is not None or child_user is not None:
             raise ValidationError("Username already exists")
 
     first_name = StringField('First name',
-        validators=[DataRequired("Please enter your first name"),
+        validators=[InputRequired("Please enter your first name"),
         Length(min=2, max=64, message="First name must be at least 2 letters long")])
 
-    last_name = StringField('Last name',
-        validators=[DataRequired("Please enter your last name"),
-        Length(min=2, max=64, message="Last name must be at least 2 letters long")])
-
     password = PasswordField('Password',
-        validators=[DataRequired("Please enter a password"),
+        validators=[InputRequired("Please enter a password"),
         Length(min=8, max=64, message="Password length must be at least 8 characters long"),
         EqualTo("confirm_password", "Passwords must match")])
 
     confirm_password = PasswordField('Confirm Password',
-        validators=[DataRequired("Please confirm the password")])
+        validators=[InputRequired("Please confirm the password")])
 
     submit = SubmitField('Register')
 
@@ -51,10 +84,10 @@ class ChoreForm(FlaskForm):
     """Form for creating, editing, and deleting tasks"""
 
     name = StringField('Name',
-        validators=[DataRequired("Please enter a name for the chore")])
+        validators=[InputRequired("Please enter a name for the chore")])
 
     value = IntegerField('Points',
-        validators=[DataRequired("Please enter a point value"),
+        validators=[InputRequired("Please enter a point value"),
         NumberRange(min=1, max=9999)])
 
     child = SelectField('Child', coerce=int)
@@ -68,7 +101,7 @@ class ChoreForm(FlaskForm):
     def __init__(self):
         super().__init__()
         self.child.choices = [(child.id, child.first_name) for child in
-        User.query.filter_by(parent=current_user.id).order_by(User.first_name)]
+        current_user.children.order_by(Child.first_name)]
 
     def validate_assign(form, field):
         '''Validates that chore isn't already assigned to child'''
@@ -99,15 +132,15 @@ class ParentResetPasswordForm(FlaskForm):
     """Form for resetting parent passwords"""
 
     old_password = PasswordField('Old Password',
-        validators=[DataRequired("Please enter the old password")])
+        validators=[InputRequired("Please enter the old password")])
 
     new_password = PasswordField('New Password',
-        validators=[DataRequired("Please enter a password"),
+        validators=[InputRequired("Please enter a password"),
         Length(min=8, max=64, message="Password length must be at least 8 characters"),
         EqualTo("confirm_password", "New passwords must match")])
 
     confirm_password = PasswordField('Confirm Password',
-        validators=[DataRequired("Please confirm the password")])
+        validators=[InputRequired("Please confirm the password")])
 
     submit = SubmitField('Reset Password')
 
@@ -116,12 +149,12 @@ class ChildResetPasswordForm(FlaskForm):
 
     user_id = HiddenField('User ID')
     new_password = PasswordField('New Password',
-        validators=[DataRequired("Please enter a password"),
+        validators=[InputRequired("Please enter a password"),
         Length(min=8, max=64, message="Password length must be at least 8 characters"),
         EqualTo("confirm_password", "Passwords must match")])
 
     confirm_password = PasswordField('Confirm Password',
-        validators=[DataRequired("Please confirm the password")])
+        validators=[InputRequired("Please confirm the password")])
 
     submit = SubmitField('Reset Password')
 
@@ -129,10 +162,10 @@ class RewardForm(FlaskForm):
     """Form for adding, editing, and deleting rewards"""
 
     name = StringField('Name',
-        validators=[DataRequired("Please enter a name for the reward")])
+        validators=[InputRequired("Please enter a name for the reward")])
 
     cost = IntegerField('Points',
-        validators=[DataRequired("Please enter a point cost for the reward"),
+        validators=[InputRequired("Please enter a point cost for the reward"),
         NumberRange(min=1, max=9999)])
 
     reward_id = HiddenField('Reward ID')

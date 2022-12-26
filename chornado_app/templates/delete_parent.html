@@ -1,0 +1,13 @@
+{% extends "parents/_parent_base.html" %}
+
+{% block content %}
+    <div class="row">
+        <h3>Are you sure you want to delete {{ user.first_name }}?</h3>
+        <form action="/delete_parent/{{ user.id }}" method="post">
+            {{ template_form.hidden_tag() }}
+            {{ template_form.user_id(value=user.id) }}
+            {{ template_form.delete(class="btn btn-secondary") }}
+            <a href="{{ url_for('routes.index') }}"><button type="button" class="btn btn-secondary">Cancel</button></a>
+        </form>
+    </div>
+ {% endblock %}

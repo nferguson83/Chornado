@@ -2,7 +2,8 @@ from flask import redirect, render_template, request, Blueprint, flash
 from flask_login import login_required, current_user
 
 from .forms import (NotificationForm, AssignedChoreForm, RewardForm)
-from .sql_models import (db, User, AssignedChore, Notification, Chore, Reward)
+from .sql_models import (db, Parent, AssignedChore, ChildNotification, Chore,
+    Reward)
 from .helpers import (db_commit, redirect_url, complete_chore, flash_errors,
     request_reward)
 
@@ -18,7 +19,8 @@ def home():
 
     if request.method == 'POST':
         if notification_form.validate() and notification_form.acknowledge.data:
-            notification = Notification.query.get(notification_form.notification_id.data)
+            notification_id = notification_form.notification_id.data
+            notification = ChildNotification.query.get(notification_id)
             db.session.delete(notification)
             db_commit()
 
@@ -58,7 +60,7 @@ def rewards():
         request_reward(current_user, reward)
         return redirect(redirect_url())
 
-    rewards = User.query.get(current_user.parent).rewards
+    rewards = Parent.query.get(current_user.parent_id).rewards
     flash_errors(form)
     return render_template("children/rewards.html", rewards=rewards,
         template_form=form)

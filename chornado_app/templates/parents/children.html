@@ -11,11 +11,11 @@
                         <th scope="row" class="text-start"><h3>{{ child.first_name }}</h3></th>
                         <td class="text-start">{{ child.points }} points</td>
                         <td class="text-end">
-                            +/-{{ points_form.points(value="0") }} points
+                            +/- {{ points_form.points(value="0") }} points
                             {{ points_form.adjust }}
                         </td>
                         <td class="text-end">
-                            <a href="{{ url_for('routes.delete_user', user_id=child.id) }}">Delete</a>
+                            <a href="{{ url_for('routes.delete_child', user_id=child.id) }}">Delete</a>
                             <a href="{{ url_for('routes.pass_reset', user_id=child.id) }}">Reset Password</a>
                         </td>
                     </form>
@@ -62,8 +62,6 @@
             {{ template_form.username() }}<br>
             {{ template_form.first_name.label }}
             {{ template_form.first_name }}
-            {{ template_form.last_name.label }}
-            {{ template_form.last_name }}<br>
             {{ template_form.password.label }}
             {{ template_form.password() }}
             {{ template_form.confirm_password.label }}

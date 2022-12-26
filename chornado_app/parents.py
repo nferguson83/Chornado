@@ -2,10 +2,11 @@ from flask import redirect, render_template, request, Blueprint, flash
 from flask_login import login_required, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from .forms import (AssignedChoreForm, RewardForm, RegisterForm, PointsForm,
+from .forms import (AssignedChoreForm, RewardForm, ChildRegForm, PointsForm,
     ChoreForm, ParentResetPasswordForm)
-from .sql_models import (db, User, AssignedChore, Chore, Reward, Notification)
-from .helpers import (db_commit, redirect_url, register_user, flash_errors,
+from .sql_models import (db, Child, AssignedChore, Chore, Reward,
+    ParentNotification, ChildNotification)
+from .helpers import (db_commit, redirect_url, register_child, flash_errors,
     approve_completed, reject_completed, create_chore, assign_chore, edit_chore,
     create_reward, edit_reward)
 
@@ -17,8 +18,6 @@ def home():
     """Parents homepage"""
 
     parent = current_user
-    # Get list of children belonging to user
-    children = User.query.filter_by(parent=parent.id).order_by(User.first_name)        
     child_data = []
     # Get list of notifications for user
     notifications = parent.notifications
@@ -27,21 +26,20 @@ def home():
 
     # Create list of dictionaries of data for children
     # and count of the chores assigned to them
-    for child in children:
+    for child in parent.children:
         chores = child.assigned_chores.count()
         child_dict = {'username': child.username, 'first_name': child.first_name,
         'points': child.points, 'chores': chores}
         child_data.append(child_dict)
     return render_template('parents/home.html', child_data=child_data,
-    notifications=notifications, chore_form=chore_form, reward_form=reward_form)
+        notifications=notifications, chore_form=chore_form, reward_form=reward_form)
 
 @parent_bp.route('/children', methods=['GET', 'POST'])
 @login_required
 def children():
     """Parent's children page for listing and creating child accounts"""
 
-    parent = current_user
-    register_form = RegisterForm()
+    register_form = ChildRegForm()
     points_form = PointsForm()
     chore_form = AssignedChoreForm()
 
@@ -51,16 +49,14 @@ def children():
             username = register_form.username.data
             password = register_form.password.data
             first_name = register_form.first_name.data
-            last_name = register_form.last_name.data
-            register_user(username, password, first_name, last_name, "child",
-                0, parent.id)
+            register_child(username, password, first_name)
             flash(f'Account created for {first_name}', 'success')
             db_commit()
             return redirect(redirect_url())
 
         # Adjust child's points
         if points_form.validate() and points_form.adjust.data:
-            child = User.query.get(points_form.child_id.data)
+            child = Child.query.get(points_form.child_id.data)
             new_points = points_form.points.data
             child.points += new_points
             if new_points < 0:
@@ -79,7 +75,7 @@ def children():
 
             current_chore = AssignedChore.query.get(chore_form.chore_id.data)
             chore_info = Chore.query.get(current_chore.chore_id)
-            child = User.query.get(current_chore.user_id)
+            child = Child.query.get(current_chore.user_id)
 
             # Approve completed chore, assign points, and delete assigned chore
             if chore_form.approve.data:
@@ -103,7 +99,7 @@ def children():
         flash_errors(chore_form)
         return redirect(redirect_url())
 
-    children = User.query.filter_by(parent=parent.id).order_by(User.first_name)
+    children = current_user.children
     child_data = []
 
     # Create list of dictionaries of data for children
@@ -137,7 +133,7 @@ def parent_chores():
     if request.method == 'POST' and form.validate_on_submit():
         name = form.name.data
         value = form.value.data
-        child = User.query.get(form.child.data)
+        child = Child.query.get(form.child.data)
         chore_id = form.chore_id.data
         chore = Chore.query.get(chore_id)
 
@@ -184,12 +180,11 @@ def parent_rewards():
         elif form.delete.data:
             db.session.delete(reward)
         elif form.deliver.data:
-            notification = Notification.query.get(form.notification_id.data)
+            notification = ParentNotification.query.get(form.notification_id.data)
             db.session.delete(notification)
             message = f'You have been given {reward.name}!'
-            new_notification = Notification(type='reward', message=message,
-                user_id=notification.child_id, child_id=notification.child_id,
-                reward_id=notification.reward_id)
+            new_notification = ChildNotification(type='reward', message=message,
+                child_id=notification.child_id, reward_id=notification.reward_id)
             db.session.add(new_notification)
             flash('Reward delivered', 'success')
         db_commit()
