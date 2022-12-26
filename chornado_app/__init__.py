@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 def create_app():
     '''Creates flask application session'''
-  
+
     app = Flask(__name__, instance_relative_config=True)
     # Load environment variables into OS, and remove .env for production
     load_dotenv('../.env')
