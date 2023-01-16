@@ -57,7 +57,7 @@
     </div>
     <div class="row">
         <form action="/parent/children" method="post">
-            {{ template_form.hidden_tag() }}
+            {{ template_form.csrf_token() }}
             {{ template_form.username.label }}
             {{ template_form.username() }}<br>
             {{ template_form.first_name.label }}

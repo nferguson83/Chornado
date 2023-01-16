@@ -24,7 +24,7 @@
                 {% endfor %}
                 <tr>
                     <form action="/parent/rewards" method="post">
-                        {{ template_form.hidden_tag() }}
+                        {{ template_form.csrf_token() }}
                         <td>{{ template_form.name }}</td>
                         <td>{{ template_form.cost }}</td>
                         <td>{{ template_form.create }}</td>
