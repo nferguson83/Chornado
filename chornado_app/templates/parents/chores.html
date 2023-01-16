@@ -26,7 +26,7 @@
                 {% endfor %}
                 <tr>
                     <form action="/parent/chores" method="post">
-                        {{ template_form.hidden_tag() }}
+                        {{ template_form.csrf_token() }}
                         <td>{{ template_form.name }}</td>
                         <td>{{ template_form.value }}</td>
                         <td>{{ template_form.child(hidden="True") }}</td>

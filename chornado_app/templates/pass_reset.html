@@ -4,7 +4,7 @@
     <div class="row">
         <h3>Password reset for {{ user.first_name }}</h3>
         <form action="/pass_reset/{{ user.id }}" method="post">
-            {{ template_form.hidden_tag() }}
+            {{ template_form.csrf_token() }}
             {{ template_form.user_id(value=user.id) }}
             {{ template_form.new_password }}
             {{ template_form.confirm_password }}
