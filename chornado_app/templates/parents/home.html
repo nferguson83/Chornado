@@ -1,52 +1,54 @@
 {% extends "parents/_parent_base.html" %}
 
 {% block content %}
-    {% if notifications.count() > 0 %}
-        <div class="row">
-            <div class="alert alert-info d-flex align-items-center" role="alert">
-                <ul class="list-group-flush">
-                    {% for notification in notifications %}
-                        {% if notification.type == 'chore' %}
-                            <form action="/parent/children" method="post">
-                                {{ chore_form.csrf_token() }}
-                                {{ chore_form.chore_id(value=notification.chore_id) }}
-                                <li class="list-group-item list-group-item-info">{{ notification.message }} {{ chore_form.approve }}{{ chore_form.reject }}</li>
-                            </form>
-                        {% elif notification.type == 'reward' %}
-                            <form action="/parent/rewards" method="post">
-                                {{ reward_form.csrf_token }}
-                                {{ reward_form.reward_id(value=notification.reward_id) }}
-                                {{ reward_form.cost(hidden="True", value=1) }}
-                                {{ reward_form.name(hidden="True", value="name") }}
-                                {{ reward_form.notification_id(value=notification.id) }}
-                                <li class="list-group-item list-group-item-info">{{ notification.message }} {{ reward_form.deliver }}</li>
-                            </form>
-                        {% endif %}
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-    {% endif %}
-    <div class="row">
-        <table class = "table">
-            <thead>
-                <tr>
-                    <th scope="col" class="text-start">Child</th>
-                    <th scope="col" class="text-start">Name</th>
-                    <th scope="col" class="text-end">Points</th>
-                    <th scope="col" class="text-end">Active Chores</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for child in child_data %}
-                    <tr>
-                        <th scope="row" class="text-start"><a href="/parent/children">{{ child["username"] }}</a></th>
-                        <td class="text-start">{{ child["first_name"] }}</td>
-                        <td class="text-end">{{ child["points"] }}</td>
-                        <td class="text-end">{{ child["chores"] }}</td>                                                                     
-                    </tr>
+{% if notifications.count() > 0 %}
+<div class="row mx-auto">
+    <div class="col">
+        <div class="alert alert-info d-flex align-items-center" role="alert">
+            <ul class="list-group-flush">
+                {% for notification in notifications %}
+                    {% if notification.type == 'chore' %}
+                        <form action="/parent/children" method="post">
+                            {{ chore_form.csrf_token() }}
+                            {{ chore_form.chore_id(value=notification.chore_id) }}
+                            <li class="list-group-item notification">{{ notification.message }} {{ chore_form.approve(class="btn btn-secondary btn-not") }}{{ chore_form.reject(class="btn btn-secondary btn-not") }}</li>
+                        </form>
+                    {% elif notification.type == 'reward' %}
+                        <form action="/parent/rewards" method="post">
+                            {{ reward_form.csrf_token }}
+                            {{ reward_form.reward_id(value=notification.reward_id) }}
+                            {{ reward_form.cost(hidden="True", value=1) }}
+                            {{ reward_form.name(hidden="True", value="name") }}
+                            {{ reward_form.notification_id(value=notification.id) }}
+                            <li class="list-group-item notification">{{ notification.message }} {{ reward_form.deliver(class="btn btn-secondary btn-not") }}</li>
+                        </form>
+                    {% endif %}
                 {% endfor %}
-            </tbody>                        
-        </table>
+            </ul>
+        </div>
     </div>
+</div>
+{% endif %}
+<div class="row mx-auto">
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th scope="col" class="text-start">Child</th>
+                <th scope="col" class="text-start">Username</th>
+                <th scope="col" class="text-end">Points</th>
+                <th scope="col" class="text-end">Active Chores</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for child in child_data %}
+                <tr>
+                    <th scope="row" class="text-start"><a href="/parent/children" class="link-primary">{{ child["first_name"] }}</a></th>
+                    <td class="text-start">{{ child["username"] }}</td>
+                    <td class="text-end">{{ child["points"] }}</td>
+                    <td class="text-end">{{ child["chores"] }}</td>                                                                     
+                </tr>
+            {% endfor %}
+        </tbody>                        
+    </table>
+</div>
 {% endblock %}

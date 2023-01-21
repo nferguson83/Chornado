@@ -1,20 +1,37 @@
 {% extends "_base.html" %}
 
 {% block content %}
-    <div class="row">
-        <form action="/register" method="post">
+<div class="row">
+    <div class="col-10 col-md-8 col-lg-10 mx-auto">
+        <div class="row my-5">
+            <h3 class="text-center">Register a parent account</h3>
+        </div>            
+        <form action="/register" method="post" class="row g-3 my-3">
             {{ template_form.csrf_token() }}
-            {{ template_form.username.label }}
-            {{ template_form.username() }}<br>
-            {{ template_form.first_name.label }}
-            {{ template_form.first_name }}
-            {{ template_form.last_name.label }}
-            {{ template_form.last_name }}<br>
-            {{ template_form.password.label }}
-            {{ template_form.password() }}
-            {{ template_form.confirm_password.label }}
-            {{ template_form.confirm_password }}
-            {{ template_form.submit() }}
+            <div class="col-12">
+                {{ template_form.username.label(class="form-label", for="inputEmail") }}
+                {{ template_form.username(class="form-control", id="inputEmail") }}
+            </div>
+            <div class="col-md-6">
+                {{ template_form.first_name.label(class="form-label", for="inputFirst") }}
+                {{ template_form.first_name(class="form-control", id="inputFirst") }}
+            </div>
+            <div class="col-md-6">
+                {{ template_form.last_name.label(class="form-label", for="inputLast") }}
+                {{ template_form.last_name(class="form-control", id="inputLast") }}        
+            </div>
+            <div class="col-md-6">
+                {{ template_form.password.label(class="form-label", for="inputPass") }}
+                {{ template_form.password(class="form-control", id="inputPass") }}        
+            </div>
+            <div class="col-md-6">
+                {{ template_form.confirm_password.label(class="form-label", for="inputConfirm") }}
+                {{ template_form.confirm_password(class="form-control", id="inputConfirm") }}        
+            </div>
+            <div class="col-12">
+                {{ template_form.submit(class="btn btn-primary") }}        
+            </div>
         </form>
     </div>
+</div>
 {% endblock %}

@@ -1,36 +1,42 @@
 {% extends "parents/_parent_base.html" %}
 
 {% block content %}
-    <div class="row">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Cost</th>
-                    <th scope="col">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for reward in rewards %}                              
-                    <tr>
-                        <form action="/parent/rewards" method="post">
-                            {{ template_form.csrf_token() }}
-                            {{ template_form.reward_id(value=reward.id) }}
-                            <td>{{ template_form.name(value=reward.name) }}</td>
-                            <td>{{ template_form.cost(value=reward.cost) }}</td>
-                            <td>{{ template_form.edit }}{{ template_form.delete }}</td>
-                        </form>
-                    </tr>
-                {% endfor %}
-                <tr>
-                    <form action="/parent/rewards" method="post">
-                        {{ template_form.csrf_token() }}
-                        <td>{{ template_form.name }}</td>
-                        <td>{{ template_form.cost }}</td>
-                        <td>{{ template_form.create }}</td>
-                    </form> 
-                </tr>
-            </tbody>
-        </table>
-    </div>
+<div class="row mx-auto text-center">
+    <h2>Rewards</h2>
+</div>
+<div class="row mx-auto">
+    <table class="table table-striped table-sm align-middle">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Cost</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for reward in rewards %}                              
+            <tr>
+                <form action="/parent/rewards" method="post">
+                    {{ template_form.csrf_token() }}
+                    {{ template_form.reward_id(value=reward.id) }}
+                    <td>{{ template_form.name(value=reward.name, class="form-control") }}</td>
+                    <td>{{ template_form.cost(value=reward.cost, class="form-control") }}</td>
+                    <td>
+                        {{ template_form.edit(class="btn btn-primary") }}
+                        {{ template_form.delete(class="btn btn-primary") }}
+                    </td>
+                </form>
+            </tr>
+            {% endfor %}
+            <tr>
+                <form action="/parent/rewards" method="post">
+                    {{ template_form.csrf_token() }}
+                    <td>{{ template_form.name(class="form-control") }}</td>
+                    <td>{{ template_form.cost(class="form-control") }}</td>
+                    <td>{{ template_form.create(class="btn btn-primary") }}</td>
+                </form> 
+            </tr>
+        </tbody>
+    </table>
+</div>
 {% endblock %}

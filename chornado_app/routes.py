@@ -2,7 +2,7 @@ from flask import redirect, render_template, request, url_for, Blueprint, flash
 from flask_login import current_user, login_required, logout_user
 from werkzeug.security import generate_password_hash
 
-from .forms import (DeleteUserForm, ChildResetPasswordForm)
+from .forms import (DeleteUserForm, ChildResetPasswordForm, LoginForm)
 from .sql_models import (db, Parent, Child, ParentNotification)
 from .helpers import (db_commit, flash_errors, redirect_url)
 
@@ -14,7 +14,8 @@ def index():
     """Renders splash screen or parent/child home pages"""
 
     if not current_user.is_authenticated:
-        return render_template('index.html')
+        form = LoginForm()
+        return render_template('index.html', template_form=form)
     # If logged in user is type: parent, load parent homepage
     if current_user.type == 'parent':
         return redirect(url_for('parent.home'))
@@ -22,43 +23,39 @@ def index():
     # If logged in user is type: child, load child homepage
     return redirect(url_for('child.home'))
 
-@routes_bp.route('/delete/<int:user_id>', methods=['GET', 'POST'])
-@login_required
-def delete_user(user_id):
-    """Route for deleting users"""
+# @routes_bp.route('/delete/<int:user_id>', methods=['GET', 'POST'])
+# @login_required
+# def delete_user(user_id):
+#     """Route for deleting users"""
 
-    print(redirect_url())
-    print(url_for('parent.children'))
-    print(request.referrer)
-    if url_for('parent.children') in redirect_url():
-        print('child')
-        user = Child.query.get(user_id)      
+#     if url_for('parent.children') in redirect_url():
+#         user = Child.query.get(user_id)      
         
-    elif url_for('parent.settings') in redirect_url():
-        user = Parent.query.get(user_id)
-    # else:
-    #     user = None
-    form = DeleteUserForm()
+#     elif url_for('parent.settings') in redirect_url():
+#         user = Parent.query.get(user_id)
+#     # else:
+#     #     user = None
+#     form = DeleteUserForm()
 
-    if request.method == 'POST' and form.validate_on_submit():
-        if user.type == 'parent' and user is not None:
-            logout_user()
-            db.session.delete(user)
-        else:
-            # Identify notifications linked to child account for deletion
-            notifications = ParentNotification.query.filter_by(child_id=user.id).all()
-            for notification in notifications:
-                db.session.delete(notification)
-            db.session.delete(user)
+#     if request.method == 'POST' and form.validate_on_submit():
+#         if user.type == 'parent' and user is not None:
+#             logout_user()
+#             db.session.delete(user)
+#         else:
+#             # Identify notifications linked to child account for deletion
+#             notifications = ParentNotification.query.filter_by(child_id=user.id).all()
+#             for notification in notifications:
+#                 db.session.delete(notification)
+#             db.session.delete(user)
 
-        db_commit()
-        return redirect(url_for('routes.index'))
+#         db_commit()
+#         return redirect(url_for('routes.index'))
 
-    if user is not None and (user == current_user or user in current_user.children):
-        return render_template('delete_user.html', template_form=form,
-            user=user)
+#     if user is not None and (user == current_user or user in current_user.children):
+#         return render_template('delete_user.html', template_form=form,
+#             user=user)
 
-    return redirect(url_for('routes.index'))
+#     return redirect(url_for('routes.index'))
 
 @routes_bp.route('/delete_child/<int:user_id>', methods=['GET', 'POST'])
 @login_required
@@ -76,7 +73,7 @@ def delete_child(user_id):
         flash(f'{user.first_name} has been deleted.', 'success')
         db.session.delete(user)
         db_commit()
-        return redirect(url_for('routes.index'))
+        return redirect(url_for('parent.children'))
 
     if user is not None and user in current_user.children:
         return render_template('delete_child.html', template_form=form,

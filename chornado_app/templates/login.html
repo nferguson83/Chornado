@@ -1,14 +1,23 @@
 {% extends "_base.html" %}
 
 {% block content %}
-    <div class="row">
-        <form action="/login" method="post">
+<div class="row my-5">
+    <div class="col-8 col-md-6 col-lg-4 mx-auto">
+       <form action="/login" method="post" class="row">
             {{ template_form.csrf_token() }}
-            {{ template_form.username.label }}
-            {{ template_form.username() }}
-            {{ template_form.password.label }}
-            {{ template_form.password() }}
-            {{ template_form.submit() }}
+            <div class="row my-1 text-center">
+                <h2>Login</h2>                 
+            </div>
+            <div class="row my-1">
+                {{ template_form.username(class="form-control", placeholder="Username") }}
+            </div>
+            <div class="row my-1">
+                {{ template_form.password(class="form-control", placeholder="Password") }}
+            </div>
+            <div class="col my-1 text-center">
+                {{ template_form.submit(class="btn btn-primary") }}
+            </div>
         </form>
     </div>
+</div>
 {% endblock %}

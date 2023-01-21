@@ -1,13 +1,17 @@
 {% extends "children/_child_base.html" %}
 
 {% block content %}
-    <div class="row">
-        <table class="table">
+<div class="row mx-auto text-center">
+    <h2>Rewards</h2>
+</div>
+<div class="row mx-auto">
+    <div class="col">
+        <table class="table table-striped align-middle">
             <thead>
                 <tr>
-                    <th scope="col">Reward</th>
-                    <th scope="col">Cost</th>
-                    <th scope="col"></th>
+                    <th scope="col" class="text-start">Reward</th>
+                    <th scope="col" class="text-end">Cost</th>
+                    <th scope="col" class="text-end"></th>
                 </tr>
             </thead>
             <tbody>
@@ -18,12 +22,14 @@
                             {{ template_form.reward_id(value=reward.id) }}
                             {{ template_form.cost(hidden="True", value=reward.cost) }}
                             {{ template_form.name(hidden="True", value=reward.name) }}
-                            <td>{{ reward.name }}</td>
-                            <td>{{ reward.cost }}</td>
-                            <td>{{ template_form.purchase }}</td>
+                            <th scope="row" class="text-start">{{ reward.name }}</th>
+                            <td class="text-end">{{ reward.cost }}</td>
+                            <td class="text-end">{{ template_form.purchase(class="btn btn-primary") }}</td>
                         </form>
                     </tr>
                 {% endfor %}
+            </tbody>
         </table>
     </div>
+</div>
 {% endblock %}
