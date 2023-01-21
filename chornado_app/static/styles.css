@@ -9,5 +9,43 @@
 }
 
 #bodyMain {
-    background-color: #F5ECCD;
+    background-color: #FFFFFF;
+}
+
+.btn-primary {
+    background-color: #6C91BF;
+}
+
+.btn-secondary {
+    background-color: #FFFFFF;
+    color: #000000;
+}
+
+.alert-info {
+    background-color: #6C91BF;
+}
+
+.alert-success {
+    background-color: #5FB0B7;
+}
+
+.notification {
+    color: #FFFFFF;
+    font-size: 15px;
+}
+
+.btn-not {
+    font-size: 15px;
+}
+
+.link-primary {
+    color: #6C91BF;
+}
+
+.point-adjust {
+    width: 4em;
+}
+
+.child-link {
+    font-size: 15px;
 }

@@ -1,39 +1,46 @@
 {% extends "parents/_parent_base.html" %}
 
 {% block content %}
-    <div class="row">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Points</th>
-                    <th scope="col">Assign to:</th>
-                    <th scope="col">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for chore in chores %}                              
-                    <tr>
-                        <form action="/parent/chores" method="post">
-                            {{ template_form.csrf_token() }}
-                            {{ template_form.chore_id(value=chore.id) }}
-                            <td>{{ template_form.name(value=chore.name) }}</td>
-                            <td>{{ template_form.value(value=chore.value) }}</td>
-                            <td>{{ template_form.child }}{{ template_form.assign }}</td>
-                            <td>{{ template_form.edit }}{{ template_form.delete }}</td>
-                        </form>
-                    </tr>
-                {% endfor %}
-                <tr>
-                    <form action="/parent/chores" method="post">
-                        {{ template_form.csrf_token() }}
-                        <td>{{ template_form.name }}</td>
-                        <td>{{ template_form.value }}</td>
-                        <td>{{ template_form.child(hidden="True") }}</td>
-                        <td>{{ template_form.create }}</td>
-                    </form> 
-                </tr>
-            </tbody>
-        </table>
-    </div>
+<div class="row mx-auto text-center">
+    <h2>Chores</h2>
+</div>
+<div class="row mx-auto">
+    <table class="table table-striped table-sm align-middle">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Points</th>
+                <th scope="col">Assign to:</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for chore in chores %}                              
+            <tr>
+                <form action="/parent/chores" method="post">
+                    {{ template_form.csrf_token() }}
+                    {{ template_form.chore_id(value=chore.id) }}
+                    <td>{{ template_form.name(value=chore.name, class="form-control") }}</td>
+                    <td>{{ template_form.value(value=chore.value, class="form-control") }}</td>
+                    <td>{{ template_form.child(class="form-select") }}</td>
+                    <td>
+                        {{ template_form.assign(class="btn btn-primary mt-1") }}
+                        {{ template_form.edit(class="btn btn-primary mt-1") }}
+                        {{ template_form.delete(class="btn btn-primary mt-1") }}
+                    </td>
+                </form>
+            </tr>
+            {% endfor %}
+            <tr>
+                <form action="/parent/chores" method="post">
+                    {{ template_form.csrf_token() }}
+                    <td>{{ template_form.name(class="form-control") }}</td>
+                    <td>{{ template_form.value(class="form-control") }}</td>
+                    <td>{{ template_form.child(hidden="True") }}</td>
+                    <td>{{ template_form.create(class="btn btn-primary mt-1") }}</td>
+                </form> 
+            </tr>
+        </tbody>
+    </table>
+</div>
 {% endblock %}

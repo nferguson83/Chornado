@@ -1,46 +1,50 @@
 {% extends "children/_child_base.html" %}
 
 {% block content %}
-    {% if notifications.count() > 0 %}
-        <div class="row">
-            <div class="alert alert-info d-flex align-items-center" role="alert">
-                <ul class="list-group-flush">                
-                    {% for notification in notifications %}
-                        <form action="/child/home" method="post">
-                            {{ notification_form.csrf_token() }}
-                            {{ notification_form.notification_id(value=notification.id)}}
-                            <li class="list-group-item list-group-item-info">{{ notification.message }} {{ notification_form.acknowledge }}</li>
-                        </form>
-                        {% endfor %}
-                </ul>
-            </div>
+{% if notifications.count() > 0 %}
+<div class="row mx-auto">
+    <div class="col">
+        <div class="alert alert-info d-flex align-items-center" role="alert">
+            <ul class="list-group-flush">                
+                {% for notification in notifications %}
+                <form action="/child/home" method="post">
+                    {{ notification_form.csrf_token() }}
+                    {{ notification_form.notification_id(value=notification.id)}}
+                    <li class="list-group-item notification">{{ notification.message }} {{ notification_form.acknowledge(class="btn btn-secondary btn-not") }}</li>
+                </form>
+                {% endfor %}
+            </ul>
         </div>
-    {% endif %}
-    <div class="row">
-        <h3>{{ child.first_name }}  {{ child.points }} points</h3>
-        <table class="table">
+    </div>
+</div>
+{% endif %}
+<div class="row mx-auto">
+    <h3>{{ child.first_name }}  {{ child.points }} points</h3>
+    <div class="col">        
+        <table class="table table-striped align-middle">
             <thead>
                 <tr>
-                    <th scope="col">Chore</th>
-                    <th scope="col">Points</th>
-                    <th scope="col">Status</th>
-                    <th scope="col"></th>
+                    <th scope="col" class="text-start">Chore</th>
+                    <th scope="col" class="text-end">Points</th>
+                    <th scope="col" class="text-end">Status</th>
+                    <th scope="col" class="text-end"></th>
                 </tr>
             </thead>
             <tbody>
-                {% for chore in chores %}
-                    <tr>
-                        <form action="/child/home" method="post">
-                            {{ chore_form.csrf_token() }}
-                            {{ chore_form.chore_id(value=chore.id) }}
-                            <td>{{ chore.name }}</td>
-                            <td>{{ chore.points }}</td>
-                            <td>{{ chore.state }}</td>
-                            <td>{{ chore_form.complete }}</td>
-                        </form>
-                    </tr>
-                {% endfor %}
+            {% for chore in chores %}
+                <tr>
+                    <form action="/child/home" method="post">
+                        {{ chore_form.csrf_token() }}
+                        {{ chore_form.chore_id(value=chore.id) }}
+                        <th scope="row" class="text-start">{{ chore.name }}</th>
+                        <td class="text-end">{{ chore.points }}</td>
+                        <td class="text-end">{{ chore.state }}</td>
+                        <td class="text-end">{{ chore_form.complete(class="btn btn-primary") }}</td>
+                    </form>
+                </tr>
+            {% endfor %}
             </tbody>           
         </table>
     </div>
+</div>
 {% endblock %}
