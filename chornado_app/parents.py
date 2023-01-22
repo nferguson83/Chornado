@@ -128,6 +128,7 @@ def parent_chores():
     """Parent's chore page for creating, viewing, editing, and assigning chores"""
 
     parent = current_user
+    child_count = parent.children.count()
     form = ChoreForm()
 
     if request.method == 'POST' and form.validate_on_submit():
@@ -159,7 +160,7 @@ def parent_chores():
 
     flash_errors(form)
     chores = parent.chores.order_by(Chore.name)
-    return render_template('parents/chores.html', template_form=form, chores=chores)
+    return render_template('parents/chores.html', template_form=form, chores=chores, child_count=child_count)
 
 @parent_bp.route('/rewards', methods=['GET', 'POST'])
 @login_required

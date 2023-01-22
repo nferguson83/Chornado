@@ -5,13 +5,14 @@
     <h2>Chores</h2>
 </div>
 <div class="row mx-auto">
+    {% if child_count > 0 %}
     <table class="table table-striped table-sm align-middle">
         <thead>
             <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Points</th>
-                <th scope="col">Assign to:</th>
-                <th scope="col">Actions</th>
+                <th scope="col" class="col-5 col-md-auto text-start">Name</th>
+                <th scope="col" class="col-2 col-md-auto">Points</th>
+                <th scope="col" class="col-3 col-md-auto">Assign to:</th>
+                <th scope="col" class="col-2 col-md-auto text-end">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -22,8 +23,8 @@
                     {{ template_form.chore_id(value=chore.id) }}
                     <td>{{ template_form.name(value=chore.name, class="form-control") }}</td>
                     <td>{{ template_form.value(value=chore.value, class="form-control") }}</td>
-                    <td>{{ template_form.child(class="form-select") }}</td>
-                    <td>
+                    <td class="text-end">{{ template_form.child(class="form-select") }}</td>
+                    <td class="text-end">
                         {{ template_form.assign(class="btn btn-primary mt-1") }}
                         {{ template_form.edit(class="btn btn-primary mt-1") }}
                         {{ template_form.delete(class="btn btn-primary mt-1") }}
@@ -37,10 +38,16 @@
                     <td>{{ template_form.name(class="form-control") }}</td>
                     <td>{{ template_form.value(class="form-control") }}</td>
                     <td>{{ template_form.child(hidden="True") }}</td>
-                    <td>{{ template_form.create(class="btn btn-primary mt-1") }}</td>
+                    <td class="text-end">{{ template_form.create(class="btn btn-primary mt-1") }}</td>
                 </form> 
             </tr>
         </tbody>
     </table>
+    {% else %}
+    <div class="col text-center">
+        <h4 class="my-3">Please create a child account before creating chores.</h4>
+    </div>
+    {% endif %}
 </div>
+
 {% endblock %}

@@ -14,7 +14,7 @@
        <form action="/login" method="post" class="row">
             {{ template_form.csrf_token() }}
             <div class="row my-1">
-                {{ template_form.username(class="form-control", placeholder="Username") }}
+                {{ template_form.username(class="form-control", placeholder="Username/Email") }}
             </div>
             <div class="row my-1">
                 {{ template_form.password(class="form-control", placeholder="Password") }}
