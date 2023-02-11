@@ -6,7 +6,7 @@
 
 Chornado is a web application that allows parents to create and assign chores and rewards for completing them to their kids. Each chore is assigned a point value that the child can earn by completing them. They can use these points to purchase the rewards created by the parents.
 
-The project is built in Python using the Flask framework. It also uses WTForms and Flask-SQLAlchemy. It is hosted on Oracle Cloud using Oracle Autonomous Transaction Processing Database.
+The project is built in Python using the Flask framework. It also uses WTForms and Flask-SQLAlchemy. The app and database are hosted on fly.io.
 
 Logo courtesy of DC Motion Design
 
@@ -37,6 +37,4 @@ Flask-SQLAlchemy - Flask-SQLAlchemy (FSA) was one of the technology choices I st
 Bootstrap - I am using Bootstrap 5 for my front-end framework. It provides a (fairly) easy to use toolset to quickly provide high-quality, professional looking design.
 
 ## Hosting
-The application is running on an Ubuntu Linux server hosted on Oracle Cloud. Oracle Cloud provides a very generous free tier that more than covers my needs for this project, even once the project goes live. If the project actually takes off in production, I will re-evaluate the hosting solution.
-
-The database is running on an Oracle Cloud Autonomous Transaction Processing Database. I learned a lot more about Oracle DB during this project than I ever thought I would, but once I got past the learning curve, it is incredibly easy to use, and is fully included within the Oracle Cloud free-tier.
+The app and database are both hosted on fly.io. Fly offers an adequate free tier, and appears to be a very suitable replacement for Heroku.

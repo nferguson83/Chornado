@@ -11,13 +11,14 @@ def create_app():
 
     dblogin = environ.get('DBLOGIN')
     dbpassword = environ.get('DBPASSWORD')
-    dbdir = environ.get('DBDIR')
-    dbwpassword = environ.get('DBWPASSWORD')
     secret_key = environ.get('SECRET_KEY')
 
     app.config.from_mapping(
         SECRET_KEY=secret_key,
-        SQLALCHEMY_DATABASE_URI=f'oracle+oracledb://{dblogin}:{dbpassword}@chornadodb_high/?config_dir={dbdir}&wallet_location={dbdir}&wallet_password={dbwpassword}&encoding=UTF-8&nencoding=UTF-8',
+        # Connection string for development
+        # SQLALCHEMY_DATABASE_URI=f'postgresql://{dblogin}:{dbpassword}@chornadodb.fly.dev:5432',
+        # Connection string for production
+        SQLALCHEMY_DATABASE_URI=f'postgresql://{dblogin}:{dbpassword}@chornadodb.internal:5432',
         SQLALCHEMY_TRACK_MODIFICATIONS=False
     )
 
