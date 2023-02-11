@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash
 
 from .forms import (DeleteUserForm, ChildResetPasswordForm, LoginForm)
 from .sql_models import (db, Parent, Child, ParentNotification)
-from .helpers import (db_commit, flash_errors, redirect_url)
+from .helpers import (db_commit, flash_errors)
 
 routes_bp = Blueprint('routes', __name__)
 
@@ -88,3 +88,8 @@ def pass_reset(user_id):
         return render_template('pass_reset.html', template_form=form, user=user)
 
     return redirect(url_for('parent.children'))
+
+# Route used for intiializing db if required
+# @routes_bp.route('/init_db')
+# def init_db():
+#     db.create_all()
