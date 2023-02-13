@@ -9,16 +9,23 @@ def create_app():
 
     app = Flask(__name__, instance_relative_config=True)
 
+    # Username for fly.io DB
     dblogin = environ.get('DBLOGIN')
+    # Password for fly.io DB
     dbpassword = environ.get('DBPASSWORD')
+    # Secret key for CSRF
     secret_key = environ.get('SECRET_KEY')
+    # Internal address of fly.io DB
+    db_internal = environ.get('DBINTERNAL')
+    # Web address of fly.io DB
+    db_web = environ.get('DBWEB')
 
     app.config.from_mapping(
         SECRET_KEY=secret_key,
         # Connection string for development
-        # SQLALCHEMY_DATABASE_URI=f'postgresql://{dblogin}:{dbpassword}@chornadodb.fly.dev:5432',
+        # SQLALCHEMY_DATABASE_URI=f'postgresql://{dblogin}:{dbpassword}@{db_web}:5432',
         # Connection string for production
-        SQLALCHEMY_DATABASE_URI=f'postgresql://{dblogin}:{dbpassword}@chornadodb.internal:5432',
+        SQLALCHEMY_DATABASE_URI=f'postgresql://{dblogin}:{dbpassword}@{db_internal}:5432',
         SQLALCHEMY_TRACK_MODIFICATIONS=False
     )
 
