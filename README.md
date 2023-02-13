@@ -32,7 +32,7 @@ Flask - I used Flask as my primary web framework as it is one I've used a couple
 
 WTForms - WTForms provides a quick and easy way to create and implement web forms in Flask using Python
 
-Flask-SQLAlchemy - Flask-SQLAlchemy (FSA) was one of the technology choices I struggled with the most. The current production version of FSA uses an older version of the SQLAlchemy library. Unfortunately, when I moved my database from SQLite to Oracle ATP DB, I encountered several issues with getting FSA to connect to the database. After several hours of struggling with it, I did further research and Oracle recently released a new DB dialect library called oracledb. This library is not supported in the production version of SQLAlchemy. During development I started using the latest beta of SQLAlchemy which included this dialect, making connecting to the Oracle database much easier.
+Flask-SQLAlchemy - Flask-SQLAlchemy (FSA) is a modified version of SQLAlchemy that integrates more completely with Flask. SQLAlchemy allows you to work with database tables as Python Objects, rather than writing direct SQL queries in your code. I found this to be a much easier and more fun way to work with the database. Although, at times it did present its own challenges, I believe it was the correct choice, and I will likely use it in any Flask projects I work with in the future.
 
 Bootstrap - I am using Bootstrap 5 for my front-end framework. It provides a (fairly) easy to use toolset to quickly provide high-quality, professional looking design.
 
