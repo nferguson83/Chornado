@@ -22,6 +22,7 @@ def create_app():
 
     app.config.from_mapping(
         SECRET_KEY=secret_key,
+        SQLALCHEMY_ENGINE_OPTIONS={"pool_pre_ping": True},
         # Connection string for development
         # SQLALCHEMY_DATABASE_URI=f'postgresql://{dblogin}:{dbpassword}@{db_web}:5432',
         # Connection string for production
