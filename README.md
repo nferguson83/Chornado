@@ -1,6 +1,6 @@
 # Chornado
-### http://chornado.com
-#### Video Demo: <URL HERE>
+### https://chornado.com
+#### Video Demo: https://youtu.be/Eo80DMoXrf4
 
 ## Description
 
