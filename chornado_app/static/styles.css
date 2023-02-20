@@ -48,3 +48,8 @@
 .child-link {
     font-size: 15px;
 }
+
+iframe {
+    width: 100%;
+    min-height: 315px;
+}
